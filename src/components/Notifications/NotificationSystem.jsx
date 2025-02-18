@@ -1,5 +1,6 @@
 // src/components/Notifications/NotificationSystem.jsx
 import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useUI } from '../../context/UIContext';
 
 const NotificationSystem = () => {
@@ -7,19 +8,32 @@ const NotificationSystem = () => {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 space-y-2">
-      {notifications.map(({ id, message, type }) => (
-        <Notification
-          key={id}
-          message={message}
-          type={type}
-        />
-      ))}
+      <AnimatePresence>
+        {notifications.map(({ id, message, type }) => (
+          <motion.div
+            key={id}
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 100 }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30
+            }}
+          >
+            <Notification
+              message={message}
+              type={type}
+            />
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 };
 
 const Notification = ({ message, type }) => {
-  // Estilos según el tipo de notificación
+  // Definimos diferentes estilos según el tipo de notificación
   const styles = {
     info: 'bg-blue-500',
     success: 'bg-green-500',
@@ -28,11 +42,13 @@ const Notification = ({ message, type }) => {
   };
 
   return (
-    <div
-      className={`${styles[type]} text-white px-4 py-2 rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105`}
+    <motion.div
+      className={`${styles[type]} text-white px-6 py-3 rounded-lg shadow-lg`}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
     >
       {message}
-    </div>
+    </motion.div>
   );
 };
 
